@@ -7,7 +7,7 @@ import time
 from torchvision import transforms
 import matplotlib.pyplot as plt
 from encoder import LinearEncoder, RandomFourierEncoder
-
+from tqdm import tqdm
 
 def quantize(data, precision=8):
     # assume min and max of the data is -1 and 1
