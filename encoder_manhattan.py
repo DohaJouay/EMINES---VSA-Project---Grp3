@@ -58,11 +58,14 @@ class LinearEncoder:
         print('finish encoding data here')
         return rv, labels
 
+
+
 class ManhattanEncoder(LinearEncoder):
     def __init__(self, dim=10000, num=256, r=2):
         super().__init__(dim=dim, num=num)
         self.r = r
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.item_mem = None
     
     def compute_modular_distance(self, u, v):
         """Compute the modular Manhattan distance between two vectors"""
@@ -81,7 +84,40 @@ class ManhattanEncoder(LinearEncoder):
             rv = torch.remainder(-rv * self.item_mem[x[i]], self.r)
         return rv
     
+    def encode_data_extract_labels_batch(self, batch):
+        """
+        Encode a batch of images and extract their labels
+        
+        Args:
+            batch: Tensor of shape (batch_size, channels, height, width)
+            
+        Returns:
+            encoded_batch: Tensor of encoded images
+            labels: Tensor of labels (if provided)
+        """
+        if not isinstance(batch, torch.Tensor):
+            batch = torch.tensor(batch)
+            
+        batch_size = batch.size(0)
+        # Ensure item memory is on the same device as the batch
+        if self.item_mem is None:
+            self.build_item_mem()
+        self.item_mem = self.item_mem.to(self.device)
+        
+        # Prepare the batch
+        flat_batch = (255 * batch.view(batch_size, -1)).int().to(self.device)
+        encoded_batch = torch.zeros((batch_size, self.dim)).to(self.device)
+        
+        # Encode each image in the batch
+        for i in range(batch_size):
+            encoded_batch[i] = self.encode_one_img(flat_batch[i])
+            
+        return encoded_batch, None
+    
     def encode_data_extract_labels(self, datast):
+        """
+        Encode entire dataset with batching for memory efficiency
+        """
         n = len(datast)
         rv = torch.zeros((n, self.dim)).to(self.device)
         labels = torch.zeros(n).long().to(self.device)
@@ -93,10 +129,12 @@ class ManhattanEncoder(LinearEncoder):
         start_idx = 0
         for batch in data_loader:
             imgs, batch_labels = batch
+            imgs = imgs.to(self.device)
+            encoded_batch, _ = self.encode_data_extract_labels_batch(imgs)
+            
             batch_size = imgs.size(0)
-            for i in range(batch_size):
-                rv[start_idx + i] = self.encode_one_img((255 * imgs[i].view(-1)).int())
-                labels[start_idx + i] = batch_labels[i]
+            rv[start_idx:start_idx + batch_size] = encoded_batch
+            labels[start_idx:start_idx + batch_size] = batch_labels
             
             start_idx += batch_size
             if start_idx % 1000 == 0:
@@ -114,6 +152,9 @@ class ManhattanEncoder(LinearEncoder):
         distance = self.compute_modular_distance(x, y)
         scaled_distance = distance * 4 / (n * self.r)
         return 1 - scaled_distance
+
+
+
 
 class RandomFourierEncoder:
     def __init__(self, input_dim, gamma, gorder=2, output_dim=10000):
