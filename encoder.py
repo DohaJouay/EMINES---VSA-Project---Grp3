@@ -149,7 +149,6 @@ class RandomFourierEncoder:
         n = len(datast)  # number of examples in x
         rv = torch.zeros((n, channels * self.output_dim))
         labels = torch.zeros(n).long()
-        print('Start encoding data')
         start_time = time.time()
         batch_size = 128
         data_loader = torch.utils.data.DataLoader(datast, batch_size=batch_size, shuffle=False)
@@ -160,7 +159,6 @@ class RandomFourierEncoder:
             labels[i * batch_size: i * batch_size + num_imgs] = batch_img[1]
             if i % 100 == 99: print(
                 f"{(i + 1) * batch_size} images encoded. Total time elapse = {time.time() - start_time}")
-        print('Finish encoding data')
         return rv, labels
 
     def group_bind(self, lst):
