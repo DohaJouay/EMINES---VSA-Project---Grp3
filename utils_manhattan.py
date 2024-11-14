@@ -6,7 +6,7 @@ import numpy as np
 import time
 from torchvision import transforms
 import matplotlib.pyplot as plt
-from encoder import LinearEncoder, RandomFourierEncoder, ManhattanEncoder
+from encoder_manhattan import LinearEncoder, RandomFourierEncoder, ManhattanEncoder
 
 
 def quantize(data, precision=8):
