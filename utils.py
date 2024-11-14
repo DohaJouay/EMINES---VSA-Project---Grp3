@@ -94,18 +94,38 @@ def encode_and_save(args):
     torch.save(mem, f'{args.data_dir}/item_mem.pt')
 
     print("Encoding training data...")
-    train_hd, y_train = encoder.encode_data_extract_labels(trainset)
+    train_encoded = []
+    train_labels = []
+    with tqdm(total=len(train_loader), desc="Encoding training data") as pbar:
+        for batch, labels in train_loader:
+            if torch.cuda.is_available():
+                batch = batch.cuda()
+            encoded_batch, _ = encoder.encode_data_extract_labels_batch(batch)
+            train_encoded.append(encoded_batch.cpu())
+            train_labels.extend(labels.tolist())
+            pbar.update(1)
+            torch.cuda.empty_cache()
+
+    train_hd = torch.cat(train_encoded, dim=0)
+    y_train = torch.tensor(train_labels)
     torch.save(train_hd, f'{args.data_dir}/train_hd.pt')
     torch.save(y_train, f'{args.data_dir}/y_train.pt')
-    del train_hd, y_train
-    torch.cuda.empty_cache()  # in case of CUDA OOM
-
-    print("Encoding test data...")
-    test_hd, y_test = encoder.encode_data_extract_labels(testset)
-    torch.save(test_hd, f'{args.data_dir}/test_hd.pt')
-    torch.save(y_test, f'{args.data_dir}/y_test.pt')
-    del test_hd, y_test
+    del train_hd, y_train, train_encoded, train_labels
     torch.cuda.empty_cache()
+
+    # Encode test data with progress bar
+    print("Encoding test data...")
+    test_encoded = []
+    test_labels = []
+    with tqdm(total=len(test_loader), desc="Encoding test data") as pbar:
+        for batch, labels in test_loader:
+            if torch.cuda.is_available():
+                batch = batch.cuda()
+            encoded_batch, _ = encoder.encode_data_extract_labels_batch(batch)
+            test_encoded.append(encoded_batch.cpu())
+            test_labels.extend(labels.tolist())
+            pbar.update(1)
+            torch.cuda.empty_cache()
 
 
 def load(args):
