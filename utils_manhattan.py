@@ -3,21 +3,22 @@
 import torch
 import torchvision
 import numpy as np
+import time
 from torchvision import transforms
 import matplotlib.pyplot as plt
-from encoder import LinearEncoder, RandomFourierEncoder
+from encoder import LinearEncoder, RandomFourierEncoder, ManhattanEncoder
 
 
 def quantize(data, precision=8):
-    # Assume min and max of the data is -1 and 1
+    # assume min and max of the data is -1 and 1
     scaling_factor = 2 ** (precision - 1) - 1
     data = np.round(data * scaling_factor)
-    # Shift the quantized data to positive and rescale to [0, 1.0]
+    # shift the quantized data to positive and rescale to [0, 1.0]
     return (data + scaling_factor) / 255.0
 
 
 def encode_and_save(args):
-    ### Load data using torch with pixel values in [0,1]
+    ### load data using torch with pixel values in [0,1]
     transform = transforms.Compose([
         transforms.ToTensor(),
     ])
@@ -25,8 +26,10 @@ def encode_and_save(args):
         trainset = torchvision.datasets.MNIST(root=args.raw_data_dir, train=True, download=True, transform=transform)
         testset = torchvision.datasets.MNIST(root=args.raw_data_dir, train=False, download=True, transform=transform)
     elif args.dataset == 'fmnist':
-        trainset = torchvision.datasets.FashionMNIST(root=args.raw_data_dir, train=True, download=True, transform=transform)
-        testset = torchvision.datasets.FashionMNIST(root=args.raw_data_dir, train=False, download=True, transform=transform)
+        trainset = torchvision.datasets.FashionMNIST(root=args.raw_data_dir, train=True, download=True,
+                                                     transform=transform)
+        testset = torchvision.datasets.FashionMNIST(root=args.raw_data_dir, train=False, download=True,
+                                                    transform=transform)
     elif args.dataset == 'cifar':
         trainset = torchvision.datasets.CIFAR10(root=args.raw_data_dir, train=True, download=True, transform=transform)
         testset = torchvision.datasets.CIFAR10(root=args.raw_data_dir, train=False, download=True, transform=transform)
@@ -50,10 +53,17 @@ def encode_and_save(args):
         y_test_path = f'./{args.raw_data_dir}/ucihar/test/y_test.txt'
 
         def load_data(feature_file_path, label_file_path):
-            # Load features and labels from txt files
-            x_data = np.loadtxt(feature_file_path)
-            y_data = np.loadtxt(label_file_path).astype(np.int32) - 1
-            return x_data, y_data
+            # load training features from txt
+            x_train = open(feature_file_path, 'r')
+            x_train = x_train.readlines()
+            for idx in range(len(x_train)):
+                x_train[idx] = x_train[idx].split()
+            x_train = np.array(x_train, dtype=np.float32)
+            # load test features from txt
+            y_train = open(label_file_path, 'r')
+            y_train = y_train.readlines()
+            y_train = np.array(y_train, dtype=np.int32) - 1
+            return x_train, y_train
 
         x_train, y_train = load_data(x_train_path, y_train_path)
         x_test, y_test = load_data(x_test_path, y_test_path)
@@ -63,7 +73,6 @@ def encode_and_save(args):
         testset = HDDataset(x_test, y_test)
     else:
         raise ValueError("Dataset is not supported.")
-    
     assert len(trainset[0][0].size()) > 1
     channels = trainset[0][0].size(0)
     print('# of channels of data', channels)
@@ -71,10 +80,13 @@ def encode_and_save(args):
     print('# of training samples and test samples', len(trainset), len(testset))
 
     if args.model == 'linear-hdc':
-        print("Encoding to binary HDC with linear distance.")
-        encoder = LinearEncoder(dim=args.dim, distance_metric=args.distance_metric, modulus=args.modulus)
+        print("Encoding to binary HDC with linear hamming distance.")
+        encoder = LinearEncoder(dim=args.dim)
+    elif args.model == 'manhattan-hdc':
+        print("Encoding to HDC with Manhattan distance.")
+        encoder = ManhattanEncoder(dim=args.dim, num=256, r=args.r)
     elif 'rff' in args.model:
-        print("Encoding with random Fourier features encoder.")
+        print("Encoding with random fourier features encoder.")
         encoder = RandomFourierEncoder(
             input_dim=input_dim, gamma=args.gamma, gorder=args.gorder, output_dim=args.dim)
     else:
@@ -89,7 +101,7 @@ def encode_and_save(args):
     torch.save(train_hd, f'{args.data_dir}/train_hd.pt')
     torch.save(y_train, f'{args.data_dir}/y_train.pt')
     del train_hd, y_train
-    torch.cuda.empty_cache()
+    torch.cuda.empty_cache()  # in case of CUDA OOM
 
     print("Encoding test data...")
     test_hd, y_test = encoder.encode_data_extract_labels(testset)
