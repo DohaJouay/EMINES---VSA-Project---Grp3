@@ -94,23 +94,40 @@ def encode_and_save(args):
     torch.save(mem, f'{args.data_dir}/item_mem.pt')
 
 
-    # Encoding training data
-    print("Encoding training data...")
-    with tqdm(total=len(trainset), desc="Training Data Encoding") as pbar:
-        train_hd, y_train = encoder.encode_data_extract_labels(trainset)
-    torch.save(train_hd, f'{args.data_dir}/train_hd.pt')
-    torch.save(y_train, f'{args.data_dir}/y_train.pt')
-    del train_hd, y_train
-    torch.cuda.empty_cache()  # in case of CUDA OOM
-    
-    # Encoding test data
-    print("Encoding test data...")
-    with tqdm(total=len(testset), desc="Test Data Encoding") as pbar:
-        test_hd, y_test = encoder.encode_data_extract_labels(testset)
-    torch.save(test_hd, f'{args.data_dir}/test_hd.pt')
-    torch.save(y_test, f'{args.data_dir}/y_test.pt')
-    del test_hd, y_test
-    torch.cuda.empty_cache()
+# Encoding training data
+print("Encoding training data...")
+with tqdm(total=len(trainset), desc="Training Data Encoding") as pbar:
+    train_hd, y_train = [], []
+    for item in trainset:
+        encoded, label = encoder.encode_data_extract_labels([item])  # Process one item at a time
+        train_hd.append(encoded)
+        y_train.append(label)
+        pbar.update(1)  # Update the progress bar after each item
+
+train_hd = torch.stack(train_hd)  # Combine list of tensors if needed
+y_train = torch.tensor(y_train)  # Adjust as per your label data type
+torch.save(train_hd, f'{args.data_dir}/train_hd.pt')
+torch.save(y_train, f'{args.data_dir}/y_train.pt')
+del train_hd, y_train
+torch.cuda.empty_cache()  # in case of CUDA OOM
+
+# Encoding test data
+print("Encoding test data...")
+with tqdm(total=len(testset), desc="Test Data Encoding") as pbar:
+    test_hd, y_test = [], []
+    for item in testset:
+        encoded, label = encoder.encode_data_extract_labels([item])  # Process one item at a time
+        test_hd.append(encoded)
+        y_test.append(label)
+        pbar.update(1)  # Update the progress bar after each item
+
+test_hd = torch.stack(test_hd)  # Combine list of tensors if needed
+y_test = torch.tensor(y_test)  # Adjust as per your label data type
+torch.save(test_hd, f'{args.data_dir}/test_hd.pt')
+torch.save(y_test, f'{args.data_dir}/y_test.pt')
+del test_hd, y_test
+torch.cuda.empty_cache()
+
 
 
 
