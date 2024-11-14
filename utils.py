@@ -97,7 +97,7 @@ def encode_and_save(args):
     # Encoding training data
     print("Encoding training data...")
     with tqdm(total=len(trainset), desc="Training Data Encoding") as pbar:
-        train_hd, y_train = encoder.encode_data_extract_labels(trainset, progress_bar=pbar)
+        train_hd, y_train = encoder.encode_data_extract_labels(trainset)
     torch.save(train_hd, f'{args.data_dir}/train_hd.pt')
     torch.save(y_train, f'{args.data_dir}/y_train.pt')
     del train_hd, y_train
@@ -106,7 +106,7 @@ def encode_and_save(args):
     # Encoding test data
     print("Encoding test data...")
     with tqdm(total=len(testset), desc="Test Data Encoding") as pbar:
-        test_hd, y_test = encoder.encode_data_extract_labels(testset, progress_bar=pbar)
+        test_hd, y_test = encoder.encode_data_extract_labels(testset)
     torch.save(test_hd, f'{args.data_dir}/test_hd.pt')
     torch.save(y_test, f'{args.data_dir}/y_test.pt')
     del test_hd, y_test
