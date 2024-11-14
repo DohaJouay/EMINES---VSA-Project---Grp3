@@ -121,12 +121,12 @@ def encode_and_save(args):
             y_test.append(label)
             pbar.update(1)  # Update the progress bar after each item
 
-test_hd = torch.stack(test_hd)  # Combine list of tensors if needed
-y_test = torch.tensor(y_test)  # Adjust as per your label data type
-torch.save(test_hd, f'{args.data_dir}/test_hd.pt')
-torch.save(y_test, f'{args.data_dir}/y_test.pt')
-del test_hd, y_test
-torch.cuda.empty_cache()
+    test_hd = torch.stack(test_hd)  # Combine list of tensors if needed
+    y_test = torch.tensor(y_test)  # Adjust as per your label data type
+    torch.save(test_hd, f'{args.data_dir}/test_hd.pt')
+    torch.save(y_test, f'{args.data_dir}/y_test.pt')
+    del test_hd, y_test
+    torch.cuda.empty_cache()
 
 
 
