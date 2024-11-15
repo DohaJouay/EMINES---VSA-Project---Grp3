@@ -100,31 +100,23 @@ class ManhattanEncoder(LinearEncoder):
             rv = torch.remainder(-rv * self.item_mem[x[i]], self.r)
         return rv
 
-    def encode_data_extract_labels(self, datast):
-        n = len(datast)
-        rv = torch.zeros((n, self.dim)).to(self.device)
-        labels = torch.zeros(n).long().to(self.device)
-        print('start encoding data with Manhattan distance...')
+def encode_data_extract_labels(self, datast):
+    n = len(datast)
+    rv = torch.zeros((n, self.dim)).to(self.device)
+    labels = torch.zeros(n).long().to(self.device)
+    print('start encoding data with Manhattan distance...')
+    
+    for i in range(n):
+        # Encode single image directly
+        rv[i] = self.encode_one_img((255 * datast[i][0].view(-1)).int())
+        labels[i] = datast[i][1]
+        
+        if (i % 1000 == 999):
+            print(f"{i + 1} images encoded")
 
-        batch_size = 128
-        data_loader = torch.utils.data.DataLoader(datast, batch_size=batch_size, shuffle=False)
-
-        start_idx = 0
-        for batch in data_loader:
-            imgs, batch_labels = batch
-            imgs = imgs.to(self.device)
-            encoded_batch, _ = self.encode_data_extract_labels_batch(imgs)
-
-            batch_size = imgs.size(0)
-            rv[start_idx:start_idx + batch_size] = encoded_batch
-            labels[start_idx:start_idx + batch_size] = batch_labels
-
-            start_idx += batch_size
-            if start_idx % 1000 == 0:
-                print(f"{start_idx} images encoded")
-
-        print('finish encoding data with Manhattan distance')
-        return rv, labels
+    print('finish encoding data with Manhattan distance')
+    return rv, labels
+      
 
     def similarity(self, x, y):
         """
