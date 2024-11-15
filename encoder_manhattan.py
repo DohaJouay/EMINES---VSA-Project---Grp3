@@ -50,12 +50,9 @@ class LinearEncoder:
         n = len(datast)
         rv = torch.zeros((n, self.dim))
         labels = torch.zeros(n).long()
-        print('start encoding data here')
         for i in range(n):
             rv[i] = self.encode_one_img((255 * datast[i][0].view(-1)).int())
             labels[i] = datast[i][1]
-            if (i % 1000 == 999): print("{} images encoded".format(i + 1))
-        print('finish encoding data here')
         return rv, labels
 
 
