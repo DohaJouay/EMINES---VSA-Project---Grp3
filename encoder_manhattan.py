@@ -101,17 +101,12 @@ class ManhattanEncoder(LinearEncoder):
         n = len(datast)
         rv = torch.zeros((n, self.dim)).to(self.device)
         labels = torch.zeros(n).long().to(self.device)
-        print('start encoding data with Manhattan distance...')
         
         for i in range(n):
             # Encode single image directly
             rv[i] = self.encode_one_img((255 * datast[i][0].view(-1)).int())
             labels[i] = datast[i][1]
-            
-            if (i % 1000 == 999):
-                print(f"{i + 1} images encoded")
-    
-        print('finish encoding data with Manhattan distance')
+
         return rv, labels
       
 
