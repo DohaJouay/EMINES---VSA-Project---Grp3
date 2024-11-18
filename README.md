@@ -21,3 +21,13 @@ même implementé un [encodeur Manhattan](encoder_manhattan.py), un Bundling ave
 **Code pour cette partie:** [Bundling et ManhattanEndoding](Bundling_Projet_VSA.ipynb)
 
 **Résultats:** 
+
+## Performance Comparison Across Datasets
+
+| DataSet                          | Isolet           | UCIHAR          | MNIST           | Fashion-MNIST   |
+|----------------------------------|------------------|------------------|------------------|------------------|
+| **Number of Epochs**             | 1 epoch | 10 epochs | 1 epoch | 10 epochs | 1 epoch | 10 epochs | 1 epoch | 10 epochs |
+| **RFF-G(2^4)^VSA**              | 94.16% | 96.22% | 95.01% | 96.10% | 96.52% | 97.02% | 87.09% | 85.75% |
+| **RFF-G(2^3)^VSA with Bundling and RFF Similarity** | 87.56% | -- | 80.42% | -- | 84.46% | -- | 73.17% | -- |
+| **RFF-G(2^3)^VSA with Bundling and Manhattan Similarity** | 87.49% | -- | 80.66% | -- | 84.44% | -- | 73.13% | -- |
+| **Manhattan r(8) with Bundling**  | 3.91%  | -- | 18.32% | -- | 20.19% | -- | 13.87% | -- |
