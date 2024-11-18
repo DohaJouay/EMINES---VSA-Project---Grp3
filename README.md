@@ -20,11 +20,9 @@ même implementé un [encodeur Manhattan](encoder_manhattan.py), un Bundling ave
 
 **Code pour cette partie:** [Bundling et ManhattanEndoding](Bundling_Projet_VSA.ipynb)
 
-**Résultats:** 
+**Résultats: Comparaison de la performance selon les différents datasets** 
 
-## Performance Comparison Across Datasets
 
-## Performance Comparison Across Datasets
 
 | DataSet                                              | Isolet  | Ucihar | MNIST  | Fashion-MNIST |
 |------------------------------------------------------|---------|--------|--------|---------------|
