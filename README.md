@@ -24,8 +24,11 @@ même implementé un [encodeur Manhattan](encoder_manhattan.py), un Bundling ave
 
 ## Performance Comparison Across Datasets
 
-| DataSet                          | Isolet           | UCIHAR          | MNIST           | Fashion-MNIST   |
-|----------------------------------|------------------|------------------|------------------|------------------|
-| **RFF-G(2^3)^VSA with Bundling and RFF Similarity** | 87.56% | -- | 80.42% | -- | 84.46% | -- | 73.17% | -- |
-| **RFF-G(2^3)^VSA with Bundling and Manhattan Similarity** | 87.49% | -- | 80.66% | -- | 84.44% | -- | 73.13% | -- |
-| **Manhattan r(8) with Bundling**  | 3.91%  | -- | 18.32% | -- | 20.19% | -- | 13.87% | -- |
+## Performance Comparison Across Datasets
+
+| DataSet                                              | Isolet  | Ucihar | MNIST  | Fashion-MNIST |
+|------------------------------------------------------|---------|--------|--------|---------------|
+| **RFF-G(2^3)^VSA with Bundling and RFF Similarity**  | 87.56%  | 80.42% | 84.46% | 73.17%        |
+| **RFF-G(2^3)^VSA with Bundling and Manhattan Similarity** | 87.49%  | 80.66% |84.44% | 73.13%        |
+| **Manhattan r(8) with Bundling**                     | 3.91%   | 18.32% | 20.19% | 13.87%        |
+
