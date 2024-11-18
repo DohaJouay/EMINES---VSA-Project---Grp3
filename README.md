@@ -10,3 +10,12 @@ Dans cette partie, on clone le GitHub des auteurs de l'article et on réalise en
 **[Results_VSA.xlsx](Results_VSA.xlsx) :** Ce fichier Excel regroupe l'ensemble des résultats obtenus ainsi que le calcul des CDC pour les différents DataSets. 
 
 ## Partie 2 : Production de nouveaux résultats (Distance de Manhattan)
+
+**Utilisation du Bundling au lieu de la descente du gradient et testing sur les datasets:** Nous avons remplacé la dernière partie où on utilise la descente du gradient pour prédire les classes des nouveaux vecteurs par un algorithme du bundling où on calcule le vecteur Bundling pour chaque classe sur tous les exemples de training de cette classe. Après on utilise des formules de similarité entre le vecteur à prédire et les vecteur Bundling de chaque classe (10 vecteurs si on a 10 classes) et choisir la classe qui donne la plus grande similarité.
+Pour calculer la similarité, on opte pour deux méthodes: 
+- La méthode avec les angles.
+- La distance de Manhattan.
+Implémentation d'un encodeur Manhattan: nous avons 
+même implementé un encodeur Manhattan, un Bundling avec Manhattan et calculé la similarité avec la distance Manhattan (Manhattan end-to-end). Les résultats ont été très mauvais par rapport aux autres méthodes.
+**Code pour cette partie:** Bundling et ManhattanEndoding
+**Résultats:** 
