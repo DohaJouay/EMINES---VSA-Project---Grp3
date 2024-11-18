@@ -16,6 +16,8 @@ Pour calculer la similarité, on opte pour deux méthodes:
 - La méthode avec les angles.
 - La distance de Manhattan.
 Implémentation d'un encodeur Manhattan: nous avons 
-même implementé un encodeur Manhattan, un Bundling avec Manhattan et calculé la similarité avec la distance Manhattan (Manhattan end-to-end). Les résultats ont été très mauvais par rapport aux autres méthodes.
-**Code pour cette partie:** Bundling et ManhattanEndoding
+même implementé un [encodeur Manhattan](encoder_manhattan.py), un Bundling avec Manhattan et calculé la similarité avec la distance Manhattan (Manhattan end-to-end). Les résultats ont été très mauvais par rapport aux autres méthodes.
+
+**Code pour cette partie:** [Bundling et ManhattanEndoding](Bundling_Projet_VSA.ipynb)
+
 **Résultats:** 
