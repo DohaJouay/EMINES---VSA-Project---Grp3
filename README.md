@@ -1,5 +1,7 @@
 # Projet VSA - Groupe 3 : Understanding Hyperdimensional Computing for Parallel Single-Pass Learning
 
+This is a group project that I worked on alongside Abir Harrasse, the different parts of the project are mentioned below:
+
 ## Partie 1 : Reproduction des expériences de l'article
 Dans cette partie, on clone le GitHub des auteurs de l'article et on réalise ensuite toutes les opérations nécessaires. 
 
